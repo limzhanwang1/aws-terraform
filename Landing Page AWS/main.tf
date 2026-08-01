@@ -36,21 +36,36 @@ provider "aws" {
 
 
 
+# Lookup the existing ACM certificate by domain name
+data "aws_acm_certificate" "existing" {
+  domain   = "landing.southlab.work"
+  statuses = ["ISSUED"]
+  
+  # Note: Certificates for CloudFront MUST be in us-east-1
+   provider = aws.us_east_1 
+}
 
+####CONTROL PANEL BELOW
 
-# CONTROL PANEL: Call S3 module here
+#Call S3 module here
 module "landing_page_site" {
   source      = "./modules/s3_website"
   bucket_name = var.bucket_name
 }
 
-# CONTROL PANEL: Call cloudfront module here
+
+
+
+
+#Call Cloudfront module here
 module "cloudfront" {
   source = "./modules/cloudfront"
 
-  domain_name           = var.domain_name
+  domain_name           = "landing.southlab.work"
   s3_bucket_id          = module.s3_website.bucket_id
   s3_bucket_arn         = module.s3_website.bucket_arn
   s3_bucket_domain_name = module.s3_website.bucket_regional_domain_name
-  acm_certificate_arn   = module.acm.certificate_arn
+  
+  # Reference the data source output:
+  acm_certificate_arn   = data.aws_acm_certificate.existing.arn
 }
