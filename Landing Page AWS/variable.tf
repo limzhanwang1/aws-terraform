@@ -7,3 +7,8 @@ variable "bucket_name" {
   type    = string
   default = "landingpage-southlab"
 }
+
+variable "domain_name" {
+  type    = string
+  default = "landing.southlab.work"
+}
