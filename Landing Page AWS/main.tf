@@ -4,7 +4,7 @@ terraform {
     bucket         = "landingpage-southlab"   # Your state bucket name
     key            = "tfstate/terraform.tfstate" # Path where the state file is stored
     region         = "ap-southeast-1"
-    dynamodb_table = "terraform-state-locks"          # For state locking
+    #dynamodb_table = "terraform-state-locks"          # For state locking
     encrypt        = true                             # Encrypt state file at rest
   }
 
