@@ -40,6 +40,12 @@ resource "aws_s3_bucket_policy" "public_read" {
 resource "aws_s3_object" "index" {
   bucket       = aws_s3_bucket.this.id
   key          = "index.html"
-  content      = "<h1>Hello World! Controlled via Root main.tf Module!</h1>"
+  
+  # Reads the content of your local index.html file
+  source       = "${path.module}/index.html"
+  
+  # Calculates the MD5 hash so Terraform detects changes when you edit the file
+  etag         = filemd5("${path.module}/index.html")
+  
   content_type = "text/html"
 }
