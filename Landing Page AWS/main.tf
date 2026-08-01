@@ -34,10 +34,10 @@ import {
 }
 
 # Import the existing DynamoDB Table into Terraform state
-import {
-  to = module.s3_landing_page.aws_dynamodb_table.tf_locks
-  id = "terraform-state-locks"
-}
+#import {
+##  to = module.s3_landing_page.aws_dynamodb_table.tf_locks
+#  id = "terraform-state-locks"
+#}
 
 
 
