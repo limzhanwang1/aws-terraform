@@ -43,11 +43,12 @@ provider "aws" {
 
 # Lookup the existing ACM certificate by domain name
 data "aws_acm_certificate" "existing" {
+  provider = aws.acm
   domain   = "landing.southlab.work"
   statuses = ["ISSUED"]
   
   # Note: Certificates for CloudFront MUST be in us-east-1
-   provider = aws.aws_region_acm
+
 }
 
 ####CONTROL PANEL BELOW
