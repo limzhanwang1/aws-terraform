@@ -40,6 +40,12 @@ import {
 }
 
 
+import {
+  to = aws_cloudfront_function.verify_secret_header
+  id = "verify-cloudflare-secret"
+}
+
+
 
 # Lookup the existing ACM certificate by domain name
 data "aws_acm_certificate" "existing" {

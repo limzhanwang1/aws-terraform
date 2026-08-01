@@ -3,6 +3,11 @@ data "aws_cloudfront_cache_policy" "caching_optimized" {
   name = "Managed-CachingOptimized"
 }
 
+data "aws_cloudfront_function" "verify_secret_header" {
+  name  = "verify-cloudflare-secret"
+  stage = "LIVE" # Must be "LIVE" to attach to a distribution
+}
+
 
 # 2. Create Origin Access Control (OAC)
 resource "aws_cloudfront_origin_access_control" "oac" {
@@ -37,7 +42,16 @@ resource "aws_cloudfront_distribution" "this" {
 
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
+
+    # Attach the referenced CloudFront Function
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = data.aws_cloudfront_function.verify_secret_header.arn
+    }
   }
+
+
+  
 
   custom_error_response {
     error_code            = 404
