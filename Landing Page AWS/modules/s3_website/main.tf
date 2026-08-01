@@ -102,6 +102,7 @@ resource "aws_s3_object" "favicon" {
   content_type = "image/x-icon" # Use "image/png" for PNG files
 
   depends_on = [aws_s3_bucket_policy.bucket_policy]
+}
 
 # Last State Lock Table
 resource "aws_dynamodb_table" "tf_locks" {
