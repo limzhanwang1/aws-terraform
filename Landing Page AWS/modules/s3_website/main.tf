@@ -92,7 +92,18 @@ resource "aws_s3_object" "index" {
   depends_on = [aws_s3_bucket_policy.bucket_policy]
 }
 
-# 7. State Lock Table
+
+# 7. Upload Icon
+resource "aws_s3_object" "favicon" {
+  bucket       = aws_s3_bucket.this.id
+  key          = "favicon.ico" # or "favicon.png"
+  source       = "${path.module}/favicon.ico"
+  etag         = filemd5("${path.module}/favicon.ico")
+  content_type = "image/x-icon" # Use "image/png" for PNG files
+
+  depends_on = [aws_s3_bucket_policy.bucket_policy]
+
+# Last State Lock Table
 resource "aws_dynamodb_table" "tf_locks" {
   name         = "terraform-state-locks"
   billing_mode = "PAY_PER_REQUEST"
