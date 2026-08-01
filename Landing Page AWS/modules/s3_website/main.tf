@@ -1,3 +1,16 @@
+# Import the existing S3 Bucket into Terraform state
+import {
+  to = module.landing_page_site.aws_s3_bucket.this
+  id = "landingpage-southlab"
+}
+
+# Import the existing DynamoDB Table into Terraform state
+import {
+  to = module.landing_page_site.aws_dynamodb_table.tf_locks
+  id = "terraform-state-locks"
+}
+
+
 resource "aws_s3_bucket" "this" {
   bucket        = var.bucket_name
   force_destroy = true
