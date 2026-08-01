@@ -1,56 +1,97 @@
+# 1. Lookup the identity running Terraform
+data "aws_caller_identity" "current" {}
+
+# 2. S3 Bucket (Private)
 resource "aws_s3_bucket" "this" {
   bucket        = var.bucket_name
-  force_destroy = true
+  force_destroy = false
 }
 
-resource "aws_s3_bucket_website_configuration" "this" {
+# 3. Ownership Controls (Disable ACLs, rely on bucket/IAM policies)
+resource "aws_s3_bucket_ownership_controls" "this" {
   bucket = aws_s3_bucket.this.id
 
-  index_document {
-    suffix = "index.html"
+  rule {
+    object_ownership = "BucketOwnerEnforced"
   }
 }
 
+# 4. Block Public Internet Access
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket                  = aws_s3_bucket.this.id
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  bucket = aws_s3_bucket.this.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_policy" "public_read" {
+# 5. Bucket Policy
+resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket     = aws_s3_bucket.this.id
   depends_on = [aws_s3_bucket_public_access_block.public_access]
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      # Statement 1: Allow CloudFront OAC to read objects to serve the website
       {
-        Sid       = "PublicReadGetObject"
+        Sid       = "AllowCloudFrontOACReadOnly"
         Effect    = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.this.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      },
+
+      # Statement 2: Deny write/delete modifications UNLESS performed by the Terraform identity
+      # (Note: This does NOT block s3:ListBucket or s3:GetObject for logged-in AWS users)
+      {
+        Sid       = "RestrictModificationsToTerraformRole"
+        Effect    = "Deny"
         Principal = "*"
-        Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.this.arn}/*"
+        Action = [
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:PutBucketPolicy",
+          "s3:PutBucketAcl"
+        ]
+        Resource = [
+          aws_s3_bucket.this.arn,
+          "${aws_s3_bucket.this.arn}/*"
+        ]
+        Condition = {
+          StringNotLike = {
+            "aws:PrincipalArn" = [
+              data.aws_caller_identity.current.arn,
+              "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+            ]
+          }
+        }
       }
     ]
   })
 }
 
+# 6. Upload index.html securely
 resource "aws_s3_object" "index" {
-  bucket       = aws_s3_bucket.this.id
-  key          = "index.html"
-  
-  # Reads the content of your local index.html file
+  bucket = aws_s3_bucket.this.id
+  key    = "index.html"
+
   source       = "${path.module}/index.html"
-  
-  # Calculates the MD5 hash so Terraform detects changes when you edit the file
   etag         = filemd5("${path.module}/index.html")
-  
   content_type = "text/html"
+
+  depends_on = [aws_s3_bucket_policy.bucket_policy]
 }
 
-
+# 7. State Lock Table
 resource "aws_dynamodb_table" "tf_locks" {
   name         = "terraform-state-locks"
   billing_mode = "PAY_PER_REQUEST"
