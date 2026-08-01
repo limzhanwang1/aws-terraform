@@ -26,7 +26,7 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   restrict_public_buckets = true
 }
 
-# 5. Bucket Policy
+# 5. Bucket Policy: Restrict modifications except for Terraform execution role and root
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket     = aws_s3_bucket.this.id
   depends_on = [aws_s3_bucket_public_access_block.public_access]
@@ -34,7 +34,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      # Statement 1: Allow CloudFront OAC to read objects to serve the website
+      # Statement 1: Allow CloudFront OAC Read Access
       {
         Sid       = "AllowCloudFrontOACReadOnly"
         Effect    = "Allow"
@@ -50,8 +50,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
         }
       },
 
-      # Statement 2: Deny write/delete modifications UNLESS performed by the Terraform identity
-      # (Note: This does NOT block s3:ListBucket or s3:GetObject for logged-in AWS users)
+      # Statement 2: Deny modifications UNLESS performed by GitHub Actions OIDC Role / Root
       {
         Sid       = "RestrictModificationsToTerraformRole"
         Effect    = "Deny"
@@ -67,9 +66,11 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
           "${aws_s3_bucket.this.arn}/*"
         ]
         Condition = {
-          StringNotLike = {
+          ArnNotLike = {
             "aws:PrincipalArn" = [
-              data.aws_caller_identity.current.arn,
+              # Allows baseline role & any assumed-role sessions (e.g. GitHubActions)
+              "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/GitHubOIDC-Terraform",
+              "arn:aws:sts::${data.aws_caller_identity.current.account_id}:assumed-role/GitHubOIDC-Terraform/*",
               "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
             ]
           }
