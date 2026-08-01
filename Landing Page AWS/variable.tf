@@ -5,5 +5,5 @@ variable "aws_region" {
 
 variable "bucket_name" {
   type    = string
-  default = "landingpage-southlab"
+  default = "landingpage-southlab1"
 }
