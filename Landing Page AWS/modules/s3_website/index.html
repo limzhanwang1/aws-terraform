@@ -1,251 +1,307 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome | AWS Terraform S3 Deployment</title>
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --card-bg: rgba(22, 27, 34, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --accent-gradient: linear-gradient(135deg, #FF9900 0%, #FF5252 50%, #7C4DFF 100%);
-            --text-main: #f0f6fc;
-            --text-muted: #8b949e;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Southlab | Portfolio & Projects</title>
+  
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: rgba(22, 27, 34, 0.75);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-color: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.25);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow-x: hidden;
-            position: relative;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Glowing background blur elements */
-        .glow-1, .glow-2 {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            z-index: 0;
-            opacity: 0.4;
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(88, 166, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(163, 113, 247, 0.08) 0%, transparent 40%);
+    }
 
-        .glow-1 {
-            width: 400px;
-            height: 400px;
-            background: #FF9900;
-            top: -100px;
-            left: -100px;
-        }
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
 
-        .glow-2 {
-            width: 500px;
-            height: 500px;
-            background: #7C4DFF;
-            bottom: -150px;
-            right: -150px;
-        }
+    /* Profile Header */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
 
-        /* Main Container */
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            width: 90%;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 3rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-        }
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-color);
+      box-shadow: 0 0 20px var(--accent-glow);
+      margin-bottom: 1.2rem;
+      object-fit: cover;
+    }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.5rem;
+    }
 
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #2ea043;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #2ea043;
-        }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+    }
 
-        h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    /* Resume Download CTA */
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+      color: #fff;
+      padding: 0.75rem 1.6rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(46, 160, 67, 0.3);
+      transition: all 0.25s ease;
+    }
 
-        p {
-            font-size: 1.125rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 2.5rem;
-        }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 160, 67, 0.45);
+    }
 
-        /* Feature grid */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-            text-align: left;
-        }
+    /* Social Links Bar */
+    .socials {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-top: 1.5rem;
+    }
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.25rem;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
+    .social-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+    }
 
-        .feature-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(255, 255, 255, 0.25);
-        }
+    .social-icon:hover {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px var(--accent-glow);
+    }
 
-        .feature-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
+    /* Section Headers */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1.2rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
 
-        .feature-title {
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--text-main);
-            margin-bottom: 0.25rem;
-        }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-color);
+    }
 
-        .feature-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
+    /* Projects Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
 
-        /* Action Buttons */
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-        .btn {
-            padding: 12px 28px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
+    .card:hover {
+      border-color: rgba(88, 166, 255, 0.4);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
 
-        .btn-primary {
-            background: var(--text-main);
-            color: var(--bg-color);
-            border: 1px solid var(--text-main);
-        }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.8rem;
+    }
 
-        .btn-primary:hover {
-            opacity: 0.9;
-            transform: scale(1.02);
-        }
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
 
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-        }
+    .card-link-icon {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
+    .card:hover .card-link-icon {
+      color: var(--accent-color);
+    }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin-bottom: 1.2rem;
+    }
 
-        @media (max-width: 600px) {
-            h1 { font-size: 2rem; }
-            .container { padding: 2rem 1.5rem; }
-        }
-    </style>
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      background: rgba(88, 166, 255, 0.1);
+      color: var(--accent-color);
+      border: 1px solid rgba(88, 166, 255, 0.15);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="glow-1"></div>
-    <div class="glow-2"></div>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <!-- Optional: Add profile image or fallback avatar -->
+      <img src="https://github.com/github.png" alt="Profile Avatar" class="avatar" />
+      <h1>Southlab</h1>
+      <p class="subtitle">Cloud & Infrastructure Engineer | Self-Host Enthusiast</p>
+      
+      <!-- Resume Download CTA -->
+      <a href="resume.pdf" class="cta-button" download="Resume_Southlab.pdf">
+        <i class="fa-solid fa-file-arrow-down"></i> Download Resume
+      </a>
 
-    <main class="container">
-        <div class="badge">
-            <span class="badge-dot"></span>
-            <span>Live from AWS S3 & GitHub Actions</span>
-        </div>
+      <!-- Social Links -->
+      <div class="socials">
+        <a href="https://github.com/limzhanwang1" target="_blank" class="social-icon" title="GitHub">
+          <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://linkedin.com/in/YOUR-LINKEDIN" target="_blank" class="social-icon" title="LinkedIn">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+        <a href="mailto:your-email@example.com" class="social-icon" title="Email Me">
+          <i class="fa-solid fa-envelope"></i>
+        </a>
+      </div>
+    </header>
 
-        <h1>Automated Cloud Infrastructure</h1>
-        
-        <p>This static site was deployed automatically via a GitHub Actions OIDC pipeline driven by Terraform infrastructure-as-code.</p>
-
-        <div class="features">
-            <div class="feature-card">
-                <div class="feature-icon">☁️</div>
-                <div class="feature-title">AWS S3</div>
-                <div class="feature-desc">Hosted securely in an isolated S3 bucket object store.</div>
+    <!-- Projects Section -->
+    <h2 class="section-title"><i class="fa-solid fa-rocket" style="color: var(--accent-color);"></i> Featured Projects</h2>
+    
+    <div class="projects-grid">
+      
+      <!-- Project 1 -->
+      <a href="https://github.com/limzhanwang1" target="_blank" style="text-decoration: none;">
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">AWS Terraform Landing Page</span>
+              <i class="fa-solid fa-arrow-up-right-from-square card-link-icon"></i>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🏗️</div>
-                <div class="feature-title">Terraform</div>
-                <div class="feature-desc">Provisioned using modular infrastructure declarations.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🚀</div>
-                <div class="feature-title">GitHub OIDC</div>
-                <div class="feature-desc">Keyless CI/CD authentication for rapid deployments.</div>
-            </div>
+            <p class="card-desc">Automated static landing page infrastructure hosted on AWS S3, CloudFront, ACM SSL, and deployed via GitHub Actions OIDC pipeline.</p>
+          </div>
+          <div class="tags">
+            <span class="tag">Terraform</span>
+            <span class="tag">AWS S3</span>
+            <span class="tag">GitHub Actions</span>
+          </div>
         </div>
+      </a>
 
-        <div class="btn-group">
-            <a href="#" class="btn btn-primary">Explore Project</a>
-            <a href="#" class="btn btn-secondary">Pipeline Logs</a>
+      <!-- Project 2 -->
+      <a href="https://github.com/limzhanwang1" target="_blank" style="text-decoration: none;">
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <span class="card-title">Home Automation & Immich Stack</span>
+              <i class="fa-solid fa-arrow-up-right-from-square card-link-icon"></i>
+            </div>
+            <p class="card-desc">Self-hosted local cloud ecosystem using Home Assistant, HACS, Docker containerization, and automated SMB network storage mounts.</p>
+          </div>
+          <div class="tags">
+            <span class="tag">Docker</span>
+            <span class="tag">Linux</span>
+            <span class="tag">Home Assistant</span>
+          </div>
         </div>
-    </main>
+      </a>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2026 Southlab. Hosted on AWS S3 & CloudFront.</p>
+    </footer>
+  </div>
 
 </body>
 </html>
