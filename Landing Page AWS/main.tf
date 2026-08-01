@@ -40,10 +40,10 @@ import {
 }
 
 
-import {
-  to = aws_cloudfront_function.verify_secret_header
-  id = "verify-cloudflare-secret"
-}
+#import {
+#  to = module.aws_cloudfront_function.verify_secret_header
+#  id = "verify-cloudflare-secret"
+#}
 
 
 
