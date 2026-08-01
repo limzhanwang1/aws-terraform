@@ -54,7 +54,7 @@ data "aws_acm_certificate" "existing" {
 ####CONTROL PANEL BELOW
 
 #Call S3 module here
-module "landing_page_site" {
+module "s3_landing_page" {
   source      = "./modules/s3_website"
   bucket_name = var.bucket_name
 }
@@ -67,10 +67,10 @@ module "landing_page_site" {
 module "cloudfront" {
   source = "./modules/cloudfront"
 
-  domain_name           = "landing.southlab.work"
-  s3_bucket_id          = module.s3_website.bucket_id
-  s3_bucket_arn         = module.s3_website.bucket_arn
-  s3_bucket_domain_name = module.s3_website.bucket_regional_domain_name
+  domain_name           = var.domain_name
+  s3_bucket_id          = module.s3_landing_page.bucket_id
+  s3_bucket_arn         = module.s3_landing_page.bucket_arn
+  s3_bucket_domain_name = module.s3_landing_page.bucket_regional_domain_name
   
   # Reference the data source output:
   acm_certificate_arn   = data.aws_acm_certificate.existing.arn
