@@ -21,6 +21,11 @@ provider "aws" {
   region = var.aws_region
 }
 
+provider "aws" {
+  alias  = "acm"
+  region = var.aws_region_acm
+}
+
 
 # Import the existing S3 Bucket into Terraform state
 #import {
@@ -42,7 +47,7 @@ data "aws_acm_certificate" "existing" {
   statuses = ["ISSUED"]
   
   # Note: Certificates for CloudFront MUST be in us-east-1
-   provider = aws.us_east_1 
+   provider = aws.aws_region_acm
 }
 
 ####CONTROL PANEL BELOW
