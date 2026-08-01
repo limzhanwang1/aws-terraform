@@ -1,8 +1,8 @@
 terraform {
   required_version = ">= 1.5.0"
   backend "s3" {
-    bucket         = "limzhanwang1-tf-state-bucket"   # Your state bucket name
-    key            = "landing-page/terraform.tfstate" # Path where the state file is stored
+    bucket         = "landingpage-southlab"   # Your state bucket name
+    key            = "tfstate/terraform.tfstate" # Path where the state file is stored
     region         = "ap-southeast-1"
     dynamodb_table = "terraform-state-locks"          # For state locking
     encrypt        = true                             # Encrypt state file at rest
