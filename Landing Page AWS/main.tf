@@ -22,6 +22,22 @@ provider "aws" {
 }
 
 
+# Import the existing S3 Bucket into Terraform state
+import {
+  to = module.landing_page_site.aws_s3_bucket.this
+  id = "landingpage-southlab"
+}
+
+# Import the existing DynamoDB Table into Terraform state
+import {
+  to = module.landing_page_site.aws_dynamodb_table.tf_locks
+  id = "terraform-state-locks"
+}
+
+
+
+
+
 # CONTROL PANEL: Call your S3 module here
 module "landing_page_site" {
   source      = "./modules/s3_website"
