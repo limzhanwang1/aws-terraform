@@ -11,41 +11,68 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
-    name: "Run Terraform Init, Plan & Apply"
+  # -------------------------------------------------------------
+  # Job 1: Run Terraform Init & Plan
+  # -------------------------------------------------------------
+  plan:
+    name: "Terraform Plan"
     runs-on: ubuntu-latest
 
-    # Set default directory where Terraform files are located
     defaults:
       run:
         working-directory: './Landing Page AWS'
 
     steps:
-      # Step 1: Download repository code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Authenticate to AWS via OIDC
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::666734239302:role/GitHubOIDC-Terraform
           aws-region: ap-southeast-1
 
-      # Step 3: Install Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.5.0"
 
-      # Step 4: Run terraform init inside 'Landing Page AWS'
       - name: Terraform Init
         run: terraform init
 
-      # Step 5: Run terraform plan inside 'Landing Page AWS'
       - name: Terraform Plan
         run: terraform plan
 
-      # Step 6: Run terraform apply inside 'Landing Page AWS'
+  # -------------------------------------------------------------
+  # Job 2: Require Approval, then Run Terraform Apply
+  # -------------------------------------------------------------
+  apply:
+    name: "Terraform Apply"
+    needs: plan
+    environment: production  # <--- Triggers the manual approval pause
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: './Landing Page AWS'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::666734239302:role/GitHubOIDC-Terraform
+          aws-region: ap-southeast-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Terraform Init
+        run: terraform init
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
